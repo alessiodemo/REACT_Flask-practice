@@ -1,35 +1,36 @@
 import MovieCard from "../components/MovieCard"
-import {useState, useEffect, use} from "react"
-import {searchMovies, getPopularMovies} from "../services/api"
+import { useState, useEffect } from "react"
+import { searchMovies, getPopularMovies } from "../services/api"
 import "../css/Home.css"
 
-function Home () {
+function Home() {
 
-    const [ searchQuery, setSearchQuery ] = useState("")
-    const [ movies, setMovies ] = useState([])
-    const [ error, setError ] = useState(null)
-    const [ loading, setLoading ] = useState(true)
-    
+    const [searchQuery, setSearchQuery] = useState("")
+    const [movies, setMovies] = useState([])
+    const [error, setError] = useState(null)
+    const [loading, setLoading] = useState(true)
+
     useEffect(() => {
         const loadPopularMovies = async () => {
             try {
                 const popularMovies = await getPopularMovies()
                 setMovies(popularMovies)
+                setError(null)
             } catch (err) {
                 console.log(err)
                 setError("Failed to load movies...")
-            }
-            finally {
+            } finally {
                 setLoading(false)
             }
         }
+
+        loadPopularMovies()
     }, [])
 
     const handleSearch = async (e) => {
         e.preventDefault()
 
-        if (!searchQuery.trim()) return
-        if (loading) return
+        if (!searchQuery.trim() || loading) return
 
         setLoading(true)
         try {
@@ -41,11 +42,8 @@ function Home () {
             setError("Failed to search movies...")
         } finally {
             setLoading(false)
+            setSearchQuery("")
         }
-
-        setLoading(true)
-        alert(searchQuery)
-        setSearchQuery("")
     };
 
     return (
